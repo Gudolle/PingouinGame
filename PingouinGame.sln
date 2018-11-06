@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PingouinGame", "Game\PingouinGame.csproj", "{2E7C60B0-A4CF-44FC-A9A2-8439C9E5A26F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2E7C60B0-A4CF-44FC-A9A2-8439C9E5A26F}.Debug|x86.ActiveCfg = Debug|x86
+		{2E7C60B0-A4CF-44FC-A9A2-8439C9E5A26F}.Debug|x86.Build.0 = Debug|x86
+		{2E7C60B0-A4CF-44FC-A9A2-8439C9E5A26F}.Release|x86.ActiveCfg = Release|x86
+		{2E7C60B0-A4CF-44FC-A9A2-8439C9E5A26F}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {81798C91-E01F-4D39-BA07-4C4983B6F5DB}
+	EndGlobalSection
+EndGlobal
