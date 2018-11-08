@@ -4,14 +4,15 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 using TiledSharp;
-
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GameTest
 {
 	public class World : GameObject
 	{
 		public TmxMap map { get; set; }
-        public Texture2D tileset { get; set; }
+        public List<Texture2D> tileset { get; set; }
 
         public string nomFiles { get; set; }
 
@@ -19,22 +20,31 @@ namespace GameTest
         private int tileHeight { get; set; }
         private int tilesetTilesWide { get; set; }
         private int tilesetTilesHigh { get; set; }
-
+        private int currentTileset { get; set; }
 
 
 
 		public World(string _file)
 		{
             nomFiles = _file;
+            tileset = new List<Texture2D>();
 
-		}
-		public void init()
+        }
+		public void init(int gid)
 		{
-			tileWidth = map.Tilesets[0].TileWidth;
-			tileHeight = map.Tilesets[0].TileHeight;
+            currentTileset = -1;
+            foreach (TmxTileset tiles in map.Tilesets){
+                if (tiles.FirstGid <= gid)
+                    currentTileset++;
+                else
+                    break;
+            }
 
-			tilesetTilesWide = tileset.Width / tileWidth;
-			tilesetTilesHigh = tileset.Height / tileHeight;
+            tileWidth = map.Tilesets[currentTileset].TileWidth;
+			tileHeight = map.Tilesets[currentTileset].TileHeight;
+
+			tilesetTilesWide = tileset[currentTileset].Width / tileWidth;
+			tilesetTilesHigh = tileset[currentTileset].Height / tileHeight;
 		}
 		public void DrawMapFirstCalc(SpriteBatch spriteBatch)
 		{
@@ -47,7 +57,10 @@ namespace GameTest
 				// Empty tile, do nothing
 				if (gid != 0)
 				{
-					int tileFrame = gid - 1;
+                    init(gid);
+                    int tileFrame = gid - map.Tilesets[currentTileset].FirstGid;
+
+                    
 					int column = tileFrame % tilesetTilesWide;
 					int row = (int)Math.Floor((double)tileFrame / (double)tilesetTilesWide);
 
@@ -56,7 +69,7 @@ namespace GameTest
 
 					Rectangle tilesetRec = new Rectangle(tileWidth * column, tileHeight * row, tileWidth, tileHeight);
 
-					spriteBatch.Draw(tileset, new Rectangle((int)x, (int)y, tileWidth, tileHeight), tilesetRec, Color.White);
+					spriteBatch.Draw(tileset[currentTileset], new Rectangle((int)x, (int)y, tileWidth, tileHeight), tilesetRec, Color.White);
 				}
 			}
 		}
@@ -64,6 +77,7 @@ namespace GameTest
         {
             if (map.Layers.Count > 1)
             {
+                Vector2 PositionMap = CalculPlayer();
                 for (var i = 0; i < map.Layers[1].Tiles.Count; i++)
                 {
                     int gid = map.Layers[1].Tiles[i].Gid;
@@ -71,16 +85,17 @@ namespace GameTest
                     // Empty tile, do nothing
                     if (gid != 0)
                     {
-                        int tileFrame = gid - 1;
+                        init(gid);
+                        int tileFrame = gid - map.Tilesets[currentTileset].FirstGid;
                         int column = tileFrame % tilesetTilesWide;
                         int row = (int)Math.Floor((double)tileFrame / (double)tilesetTilesWide);
 
-                        float x = (i % map.Width) * map.TileWidth;
-                        float y = (float)Math.Floor(i / (double)map.Width) * map.TileHeight;
+                        float x = (i % map.Width) * map.TileWidth + PositionMap.X;
+                        float y = (float)Math.Floor(i / (double)map.Width) * map.TileHeight + PositionMap.Y;
 
                         Rectangle tilesetRec = new Rectangle(tileWidth * column, tileHeight * row, tileWidth, tileHeight);
 
-                        spriteBatch.Draw(tileset, new Rectangle((int)x, (int)y, tileWidth, tileHeight), tilesetRec, Color.White);
+                        spriteBatch.Draw(tileset[currentTileset], new Rectangle((int)x, (int)y, tileWidth, tileHeight), tilesetRec, Color.White);
                     }
                 }
             }

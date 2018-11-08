@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using GameTest.FonctionUtile;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -15,9 +16,14 @@ namespace GameTest.Core
         public static Texture2D TextureShotTop;
         public static Texture2D TextureShotBottom;
         private int Vitesse = 5;
+        private int porte = 250;
+        private Vector2 PositionDepart = new Vector2();
 
-        public Shot(Direction _direction)
+        public Shot(Direction _direction, Vector2 _positionRelative)
         {
+            PositionDepart = _positionRelative;
+            PositionRelatif = _positionRelative;
+
             direction = _direction;
             switch (_direction)
             {
@@ -36,28 +42,55 @@ namespace GameTest.Core
             }
         }
 
+        
+
+
         public void DrawShoot(SpriteBatch spriteBatch)
         {
+            Position = CalculPosition.Calcul(PositionRelatif);
             spriteBatch.Draw(Texture, new Vector2(Position.X, Position.Y),  Color.Blue);
         }
         public void Move()
         {
+            if (isPorte())
+            {
+                switch (direction)
+                {
+                    case Direction.TOP:
+                        PositionRelatif.Y -= Vitesse;
+                        break;
+                    case Direction.LEFT:
+                        PositionRelatif.X -= Vitesse;
+                        break;
+                    case Direction.BOTTOM:
+                        PositionRelatif.Y += Vitesse;
+                        break;
+                    case Direction.RIGHT:
+                        PositionRelatif.X += Vitesse;
+                        break;
+                }
+            }
+            else
+            {
+                ListObject.RemoveTires.Add(this);
+            }
+        }
+
+        public Boolean isPorte()
+        {
             switch (direction)
             {
                 case Direction.TOP:
-                    Position.Y -= Vitesse;
-                    break;
-                case Direction.LEFT:
-                    Position.X -= Vitesse;
-                    break;
                 case Direction.BOTTOM:
-                    Position.Y += Vitesse;
-                    break;
+                    return Math.Abs(PositionRelatif.Y - PositionDepart.Y) < porte;
+                case Direction.LEFT:
                 case Direction.RIGHT:
-                    Position.X += Vitesse;
-                    break;
+                    return Math.Abs(PositionRelatif.X - PositionDepart.X) < porte;
+                default:
+                    return false;
             }
         }
+
         public void Collision(int HEIGHT,int WIDTH, World world)
         {
             int col = Cool(HEIGHT, WIDTH, world);
@@ -65,10 +98,10 @@ namespace GameTest.Core
             {
                 Boum monBoum = new Boum()
                 {
-                    Position = Position
+                    PositionRelatif = PositionRelatif
                 };
-                monBoum.Position.X -= 50;
-                monBoum.Position.Y -= 50;
+                monBoum.PositionRelatif.X -= 50;
+                monBoum.PositionRelatif.Y -= 50;
                 if(Monstre != null)
                     Monstre.PV -= 30;
                 ListObject.MesBoum.Add(monBoum);

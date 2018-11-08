@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.Linq;
+using GameTest.FonctionUtile;
 
 namespace GameTest
 {
@@ -76,7 +78,8 @@ namespace GameTest
         
 		public void DrawAnimation(SpriteBatch spriteBatch)
 		{
-			spriteBatch.Draw(Texture, Position, Source, Color.White);
+            Position = CalculPosition.Calcul(PositionRelatif);
+            spriteBatch.Draw(Texture, Position, Source, Color.White);
 		}
 		public void DrawId(SpriteBatch spriteBatch, SpriteFont font,Vector2 fontOrigin)
 		{
@@ -162,7 +165,7 @@ namespace GameTest
 		public int Cool(int height, int width, World world)
 		{
 			//Par rapport a un mob
-			foreach (Mob elem in ListObject.MesMob)
+			foreach (Mob elem in ListObject.MesMob.Where(x => x.world.nomFiles == ListObject.player.world.nomFiles).ToList())
 			{
 				switch (direction)
 				{

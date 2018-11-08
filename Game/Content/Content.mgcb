@@ -149,6 +149,21 @@
 #begin Tiles/Tile1.tsx
 /copy:Tiles/Tile1.tsx
 
+#begin Tiles/Tile2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Tiles/Tile2.png
+
+#begin Tiles/Tile2.tsx
+/copy:Tiles/Tile2.tsx
+
 #begin world.png
 /importer:TextureImporter
 /processor:TextureProcessor

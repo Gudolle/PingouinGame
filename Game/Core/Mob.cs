@@ -185,18 +185,6 @@ namespace GameTest
             }
         }
 
-        public void CalculPositionParRapportAuJoueur()
-        {
-            Vector2 PositionRelatifPlayer = ListObject.player.PositionRelatif;
-            Vector2 PositionPhysiquePlayer = ListObject.player.Position;
-
-            float DifferenceX = PositionRelatif.X - PositionRelatifPlayer.X;
-            float DifferenceY = PositionRelatif.Y - PositionRelatifPlayer.Y;
-
-            Position.X = PositionPhysiquePlayer.X + DifferenceX;
-            Position.Y = PositionPhysiquePlayer.Y + DifferenceY;
-        }
-
 
         private void DeplacementAgressif()
         {

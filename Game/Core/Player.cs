@@ -52,12 +52,11 @@ namespace GameTest
                     }
                     else
                     {
-                        PositionRelatif.Y -= 1;
+                        if (state.IsKeyDown(Keys.LeftShift))
+                            PositionRelatif.Y -= 3;
+                        else
+                            PositionRelatif.Y -= 1;
                     }
-				}
-				else if (Possible == 1)
-				{
-					//Position.Y = height - 32;
 				}
 
 			}
@@ -83,13 +82,12 @@ namespace GameTest
                     }
                     else
                     {
-                        PositionRelatif.X -= 1;
+                        if (state.IsKeyDown(Keys.LeftShift))
+                            PositionRelatif.X -= 3;
+                        else
+                            PositionRelatif.X -= 1;
                     }
 
-				}
-				else if (Possible == 1)
-				{
-					//Position.X = width - 32;
 				}
 			}
 			if (state.IsKeyDown(Keys.S))
@@ -115,11 +113,12 @@ namespace GameTest
                     }
                     else
                     {
-                        PositionRelatif.Y += 1;
+                        if (state.IsKeyDown(Keys.LeftShift))
+                            PositionRelatif.Y += 3;
+                        else
+                            PositionRelatif.Y += 1;
                     }
                 }
-				//else if(Possible == 1)
-					//Position.Y = 0;
 			}
 			if (state.IsKeyDown(Keys.D))
 			{
@@ -144,7 +143,10 @@ namespace GameTest
                     }
                     else
                     {
-                        PositionRelatif.X += 1;
+                        if (state.IsKeyDown(Keys.LeftShift))
+                            PositionRelatif.X += 3;
+                        else
+                            PositionRelatif.X += 1;
                     }
                 }
 				else if(Possible == 1) { 
@@ -263,7 +265,7 @@ namespace GameTest
 
         public void Tire()
         {
-            Shot MonTire = new Shot(direction);
+            Shot MonTire = new Shot(direction, PositionRelatif);
             MonTire.Position.Y = Position.Y + 16;
             MonTire.Position.X = Position.X + 16;
             ListObject.MesTires.Add(MonTire);

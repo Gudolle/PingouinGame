@@ -13,6 +13,7 @@ namespace GameTest
         public static int HEIGHT;
         public static int WIDTH;
         public static Player player;
+        public static int VitessePlayer = 1;
 
 		public static void AppartionMob()
 		{

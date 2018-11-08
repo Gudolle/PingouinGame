@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using GameTest.FonctionUtile;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace GameTest.Core
         }
         public void Draw(SpriteBatch spriteBatch)
         {
+            Position = CalculPosition.Calcul(PositionRelatif);
             spriteBatch.Draw(TextureBoum, Position, Source, Color.White);
         }
 

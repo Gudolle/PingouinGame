@@ -70,13 +70,15 @@ namespace GameTest
 			// Create a new SpriteBatch, which can be used to draw textures.
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 
-			
-            foreach(World item in ListObject.MesMondes)
+
+            foreach (World item in ListObject.MesMondes)
             {
 
                 item.map = new TmxMap(String.Format("Content/Map/{0}", item.nomFiles));
-                item.tileset = Content.Load<Texture2D>(String.Format("tiles/{0}", item.map.Tilesets[0].Name.ToString()));
-                item.init();
+
+                foreach (TmxTileset tiles in item.map.Tilesets) { 
+                    item.tileset.Add(Content.Load<Texture2D>(String.Format("tiles/{0}", tiles.Name.ToString())));
+                }
 
                 //PremierMonde.map = new TmxMap("Content/Map/map1.tmx");
                 //PremierMonde.tileset = Content.Load<Texture2D>(String.Format("tiles/{0}", world.map.Tilesets[0].Name.ToString()));
@@ -146,7 +148,6 @@ namespace GameTest
 			{
                 elem.IsDead();
 				elem.UpdateFrame(gameTime);
-                elem.CalculPositionParRapportAuJoueur();
                 //elem.Tape(gameTime);
                 if (elem.Type == 1)
 					elem.Move(rand.Next(0, 5), HEIGHT, WIDTH, ListObject.player.world);
