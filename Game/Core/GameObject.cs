@@ -9,7 +9,8 @@ namespace GameTest
 	public class GameObject
 	{
 		public Vector2 Position;
-		public Texture2D Texture;
+        public Vector2 PositionRelatif = new Vector2();
+        public Texture2D Texture;
 		public Texture2D FenetreText;
 
 		public Rectangle Source;
@@ -21,10 +22,12 @@ namespace GameTest
 
 		public int frameWidth { get; }
 		public int frameHeight { get; }
-		private int startX { get; }
+		public int startX { get; }
 		private int startY { get; }
-		public int HEIGHT { get; set; }
-		public int WIDTH { get; set; }
+
+
+        public Mob Monstre { get; set; }
+
 
 		public int idSbire { get; set; }
 		public string TextSelec { get; set;}
@@ -70,8 +73,7 @@ namespace GameTest
 			Marche_2 = 1,
 			Marche_3 = 2,
 		}
-
-		//Draw all
+        
 		public void DrawAnimation(SpriteBatch spriteBatch)
 		{
 			spriteBatch.Draw(Texture, Position, Source, Color.White);
@@ -83,22 +85,22 @@ namespace GameTest
 				new Vector2(40, 40),
 				Color.White, 0, fontOrigin, 1, SpriteEffects.None, 0);
 		}
-		public void DrawName(SpriteBatch spriteBatch, SpriteFont font, Vector2 fontOrigin)
+        public void DrawName(SpriteBatch spriteBatch, SpriteFont font, Vector2 fontOrigin)
 		{
 			spriteBatch.DrawString(
 				font, name,
 				new Vector2(Position.X, Position.Y - 20),
 				Color.White, 0, fontOrigin, 1, SpriteEffects.None, 0);
 		}
-		public void DrawTextPnj(SpriteBatch spriteBatch, SpriteFont font, Vector2 fontOrigin,int Height, int width)
-		{
-			spriteBatch.Draw(FenetreText, new Vector2((width/2 - +FenetreText.Width/2),(Height / 2 - FenetreText.Height / 2)), 
-			                 new Rectangle(0,0,371,151), Color.White);
-			spriteBatch.DrawString(font, TextSelec, new Vector2((width / 2 - +FenetreText.Width / 2)+15, (Height / 2 - FenetreText.Height / 2)+15), Color.Black, 0, new Vector2(0, 0), 1, SpriteEffects.None, 0);
-		}
 
-		//Collision !
-		public bool CoolMob(Vector2 PosPlayer)
+
+        internal void InitialisePosition(Vector2 _Position)
+        {
+            Position = _Position;
+            PositionRelatif = _Position;
+        }
+        //Collision !
+        public bool CoolMob(Vector2 PosPlayer)
 		{
 			switch (direction)
 			{
@@ -157,74 +159,10 @@ namespace GameTest
 			}
 			return false;
 		}
-		public int Cool(int height, int width, List<Mob> spriteMob, World world)
+		public int Cool(int height, int width, World world)
 		{
-			//Par rapport a l'environnement
-			/*for (int x = 0; x < world.tailleY; x++)
-			{
-				for (int y = 0; y < world.tailleX; y++)
-				{
-
-					int PosX = world.TailleTile * x;
-					int PosY = world.TailleTile * y;
-
-					if (world.map[y, x, 2] == 1)
-					{
-						switch (direction)
-						{
-							case Direction.TOP:
-								if ((Position.X < PosX && Position.X + 32 > PosX) || (Position.X < PosX + 32 && Position.X + 32 > PosX + 32))
-								{
-									if (Position.Y > PosY)
-									{
-										if (Position.Y - 32 < PosY)
-											return 2;
-
-
-									}
-								}
-								idSbire = -1;
-								break;
-							case Direction.LEFT:
-								if ((Position.Y < PosY && Position.Y + 32 >= PosY) || (Position.Y < PosY + 32 && Position.Y + 32 > PosY + 32))
-								{
-									if (Position.X > PosX)
-									{
-										if (Position.X - 32 < PosX)
-											return 2;
-									}
-								}
-								idSbire = -1;
-								break;
-							case Direction.RIGHT:
-								if ((Position.Y < PosY && Position.Y + 32 > PosY) || (Position.Y < PosY + 32 && Position.Y + 32 > PosY + 32))
-								{
-									if (Position.X + 32 > PosX)
-									{
-										if (Position.X < PosX)
-											return 2;
-
-									}
-								}
-								idSbire = -1;
-								break;
-							case Direction.BOTTOM:
-								if ((Position.X < PosX && Position.X + 32 > PosX) || (Position.X < PosX + 32 && Position.X + 32 > PosX + 32))
-								{
-									if (Position.Y + 32 > PosY)
-									{
-										if (Position.Y < PosY)
-											return 2;
-									}
-								}
-								idSbire = -1;
-								break;
-						}
-					}
-				}
-			}*/
 			//Par rapport a un mob
-			foreach (Mob elem in spriteMob)
+			foreach (Mob elem in ListObject.MesMob)
 			{
 				switch (direction)
 				{
@@ -238,6 +176,7 @@ namespace GameTest
 									if (elem.PV > 0 || elem.Type == 2)
 									{
 										idSbire = elem.id;
+                                        Monstre = elem.Type == 2 ? null : elem;
 										return 2;
 									}
 								}
@@ -255,7 +194,8 @@ namespace GameTest
 									if (elem.PV > 0 || elem.Type == 2)
 									{
 										idSbire = elem.id;
-										return 2;
+                                        Monstre = elem.Type == 2 ? null : elem; ;
+                                        return 2;
 									}
 								}
 							}
@@ -272,7 +212,8 @@ namespace GameTest
 									if (elem.PV > 0 || elem.Type == 2)
 									{
 										idSbire = elem.id;
-										return 2;
+                                        Monstre = elem.Type == 2 ? null : elem; ;
+                                        return 2;
 									}
 								}
 							}
@@ -289,7 +230,8 @@ namespace GameTest
 									if (elem.PV > 0 || elem.Type == 2)
 									{
 										idSbire = elem.id;
-										return 2;
+                                        Monstre = elem.Type == 2 ? null : elem; ;
+                                        return 2;
 									}
 								}
 							}
@@ -305,7 +247,7 @@ namespace GameTest
 				return 1;
 			if ((Position.Y <= 0) && (direction == Direction.TOP))
 				return 1;
-			if ((Position.Y >=( height - 32)) && (direction == Direction.BOTTOM))
+			if ((Position.Y >= height - 32) && (direction == Direction.BOTTOM))
 				return 1;
 			else
 				return 0;

@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using TiledSharp;
+using GameTest.Core;
 
 namespace GameTest
 {
@@ -13,8 +14,8 @@ namespace GameTest
 	/// </summary>
 	public class Game1 : Game
 	{
-		GraphicsDeviceManager graphics;
-		SpriteBatch spriteBatch;
+        public GraphicsDeviceManager graphics;
+        public SpriteBatch spriteBatch;
 
 		public int WIDTH = 960;
 		public int HEIGHT = 672;
@@ -22,14 +23,9 @@ namespace GameTest
 		public int Direct;
 		public Random rand = new Random();
 
-		Player player;
 
-		ListObject listObject = new ListObject();
-		List<Mob> Listmob;
-
-		World world;
-		SpriteFont font;
-		Vector2 fontOrigin = new Vector2(0,0);
+        public SpriteFont font;
+        public Vector2 fontOrigin = new Vector2(0,0);
 
 		public Game1()
 		{
@@ -47,14 +43,18 @@ namespace GameTest
 		/// </summary>
 		protected override void Initialize()
 		{
+
+            ListObject.HEIGHT = HEIGHT;
+            ListObject.WIDTH = WIDTH;
+
 			this.IsMouseVisible = true;
 			// TODO: Add your initialization logic here
-			world = new World();
-			player = new Player(32, 32,0,0);
-			player.name = "SkarDeht";
 
-			Listmob = listObject.InitiliasationMob();
-			Window.Title = "Game";
+
+
+            ListObject.InitialiseMonde();
+
+			Window.Title = "PingouinGame";
 			base.Initialize();
 
 		}
@@ -68,22 +68,40 @@ namespace GameTest
 			// Create a new SpriteBatch, which can be used to draw textures.
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 
-			world.map = new TmxMap("Content/map1.tmx");
-			world.tileset = Content.Load<Texture2D>(world.map.Tilesets[0].Name.ToString());
-			world.init();
+			
+            foreach(World item in ListObject.MesMondes)
+            {
 
-			player.Texture = Content.Load<Texture2D>("player");
-			player.FenetreText = Content.Load<Texture2D>("text");
-			player.Position = new Vector2(WIDTH / 2, HEIGHT / 2);
+                item.map = new TmxMap(String.Format("Content/Map/{0}", item.nomFiles));
+                item.tileset = Content.Load<Texture2D>(String.Format("tiles/{0}", item.map.Tilesets[0].Name.ToString()));
+                item.init();
 
-			foreach (Mob elem in Listmob)
-			{
-				elem.Texture = Content.Load<Texture2D>("mob");
-				if(elem.Type == 1)
-					elem.Position = new Vector2(rand.Next(0, WIDTH), rand.Next(0, HEIGHT));
-			}
+                //PremierMonde.map = new TmxMap("Content/Map/map1.tmx");
+                //PremierMonde.tileset = Content.Load<Texture2D>(String.Format("tiles/{0}", world.map.Tilesets[0].Name.ToString()));
+                //PremierMonde.init();
+            }
 
-			font = Content.Load<SpriteFont>("File");
+            ListObject.player = new Player(32, 32, 0, 0);
+            ListObject.player.name = "Pingouin";
+            ListObject.player.PV = 150;
+            ListObject.player.world = ListObject.MesMondes[0];
+
+            Shot.TextureShotLeft = Content.Load<Texture2D>("shoot/shootleft");
+            Shot.TextureShotRight = Content.Load<Texture2D>("shoot/shootright");
+            Shot.TextureShotTop = Content.Load<Texture2D>("shoot/shoottop");
+            Shot.TextureShotBottom = Content.Load<Texture2D>("shoot/shootbottom");
+
+            Boum.TextureBoum = Content.Load<Texture2D>("Boum");
+
+
+            ListObject.player.Texture = Content.Load<Texture2D>("player/player");
+            ListObject.player.FenetreText = Content.Load<Texture2D>("text");
+            ListObject.player.InitialisePosition(new Vector2(WIDTH / 2, HEIGHT / 2));
+
+
+            Mob.TextureMonstre = Content.Load<Texture2D>("mob/mob");
+            
+			font = Content.Load<SpriteFont>("Font/File");
 			//TODO: use this.Content to load your game content here 
 		}
 
@@ -94,30 +112,42 @@ namespace GameTest
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Update(GameTime gameTime)
 		{
-			// For Mobile devices, this logic will close the Game when the Back button is pressed
-			// Exit() is obsolete on iOS
-#if !__IOS__ && !__TVOS__
-			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-				Exit();
-#endif
-
-			// TODO: Add your update logic here
+            // TODO: Add your update logic here
 
 			base.Update(gameTime);
+
 			graphics.PreferredBackBufferWidth = WIDTH;
 			graphics.PreferredBackBufferHeight = HEIGHT;
 
-			player.UpdateFrame(gameTime);
-			if(!player.Affichage)
-				player.Move(Keyboard.GetState(), HEIGHT, WIDTH, Listmob, world);
-			player.Action(Keyboard.GetState(), Listmob);
 
+            if(ListObject.MesMob.Count == 0)
+                ListObject.AppartionMob();
 
-			foreach (Mob elem in Listmob)
+            ListObject.player.UpdateFrame(gameTime);
+			if(!ListObject.player.Affichage)
+                ListObject.player.Move(Keyboard.GetState(), HEIGHT, WIDTH);
+
+            ListObject.player.Action(Keyboard.GetState());
+
+            ListObject.RemoveEntity();
+
+            foreach (Shot item in ListObject.MesTires)
+            {
+                item.Collision(HEIGHT, WIDTH, ListObject.player.world);
+                item.Move();
+            }
+            foreach (Boum item in ListObject.MesBoum)
+            {
+                item.UpdateFrame(gameTime);
+            }
+            foreach (Mob elem in ListObject.MesMob)
 			{
+                elem.IsDead();
 				elem.UpdateFrame(gameTime);
-				if(elem.Type == 1)
-					elem.Move(rand.Next(0, 5), HEIGHT, WIDTH, Listmob, player, world);
+                elem.CalculPositionParRapportAuJoueur();
+                //elem.Tape(gameTime);
+                if (elem.Type == 1)
+					elem.Move(rand.Next(0, 5), HEIGHT, WIDTH, ListObject.player.world);
 			}
 		}
 
@@ -131,8 +161,9 @@ namespace GameTest
 
 			//TODO: Add your drawing code here
 			spriteBatch.Begin();
-			world.DrawMap(spriteBatch);
-			foreach (Mob elem in Listmob)
+            ListObject.player.world.DrawMapFirstCalc(spriteBatch);
+            ListObject.player.world.DrawMapSecondCalc(spriteBatch);
+            foreach (Mob elem in ListObject.MesMob)
 			{
 				if (elem.PV > 0 || elem.Type == 2)
 				{
@@ -143,12 +174,23 @@ namespace GameTest
 						elem.DrawName(spriteBatch, font, fontOrigin);
 				}
 			}
-			player.DrawId(spriteBatch, font, fontOrigin);
-			player.DrawAnimation(spriteBatch);
-			player.DrawName(spriteBatch, font, fontOrigin);
+            
+            foreach (Shot item in ListObject.MesTires)
+            {
+                item.DrawShoot(spriteBatch);
+            }
+            foreach (Boum item in ListObject.MesBoum)
+            {
+                item.Draw(spriteBatch);
+            }
 
-			if (player.idSbire != -1 && player.Affichage)
-				player.DrawTextPnj(spriteBatch, font, fontOrigin, HEIGHT, WIDTH);
+            ListObject.player.DrawId(spriteBatch, font, fontOrigin);
+            ListObject.player.drawPVplayer(spriteBatch, font, fontOrigin);
+            ListObject.player.DrawAnimation(spriteBatch);
+            ListObject.player.DrawName(spriteBatch, font, fontOrigin);
+
+			if (ListObject.player.idSbire != -1 && ListObject.player.Affichage)
+                ListObject.player.DrawTextPnj(spriteBatch, font, fontOrigin, HEIGHT, WIDTH);
 
 
 			spriteBatch.End();
