@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using GameTest.Core;
+using System.Linq;
 
 namespace GameTest
 {
@@ -26,6 +27,7 @@ namespace GameTest
                 MesMob[id].PV = 100 * multiplicateur;
                 MesMob[id].Type = 1;
                 MesMob[id].InitialisePosition(new Vector2(rand.Next(0, WIDTH), rand.Next(0, HEIGHT)));
+                MesMob[id].world = MesMondes[0];
 			}
             multiplicateur++;
             //PNJ Test

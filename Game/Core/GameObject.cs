@@ -167,11 +167,11 @@ namespace GameTest
 				switch (direction)
 				{
 					case Direction.TOP:
-						if ((Position.X <= elem.Position.X && Position.X + 32 >= elem.Position.X) || (Position.X <= elem.Position.X + 32 && Position.X + 32 >= elem.Position.X + 32))
+						if ((PositionRelatif.X <= elem.PositionRelatif.X && PositionRelatif.X + 32 >= elem.PositionRelatif.X) || (PositionRelatif.X <= elem.PositionRelatif.X + 32 && PositionRelatif.X + 32 >= elem.PositionRelatif.X + 32))
 						{
-							if (Position.Y > elem.Position.Y)
+							if (PositionRelatif.Y > elem.PositionRelatif.Y)
 							{
-								if (Position.Y - 32 < elem.Position.Y)
+								if (PositionRelatif.Y - 32 < elem.PositionRelatif.Y)
 								{
 									if (elem.PV > 0 || elem.Type == 2)
 									{
@@ -185,11 +185,11 @@ namespace GameTest
 						idSbire = -1;
 						break;
 					case Direction.LEFT:
-						if((Position.Y <= elem.Position.Y && Position.Y + 32 >= elem.Position.Y) || (Position.Y <= elem.Position.Y+32 && Position.Y +32 >= elem.Position.Y + 32))
+						if((PositionRelatif.Y <= elem.PositionRelatif.Y && PositionRelatif.Y + 32 >= elem.PositionRelatif.Y) || (PositionRelatif.Y <= elem.PositionRelatif.Y+32 && PositionRelatif.Y +32 >= elem.PositionRelatif.Y + 32))
 						{
-							if (Position.X > elem.Position.X)
+							if (PositionRelatif.X > elem.PositionRelatif.X)
 							{
-								if (Position.X - 32 < elem.Position.X)
+								if (PositionRelatif.X - 32 < elem.PositionRelatif.X)
 								{
 									if (elem.PV > 0 || elem.Type == 2)
 									{
@@ -203,11 +203,11 @@ namespace GameTest
 						idSbire = -1;
 						break;
 					case Direction.RIGHT:
-						if ((Position.Y <= elem.Position.Y && Position.Y + 32 >= elem.Position.Y) || (Position.Y <= elem.Position.Y + 32 && Position.Y + 32 >= elem.Position.Y + 32))
+						if ((PositionRelatif.Y <= elem.PositionRelatif.Y && PositionRelatif.Y + 32 >= elem.PositionRelatif.Y) || (PositionRelatif.Y <= elem.PositionRelatif.Y + 32 && PositionRelatif.Y + 32 >= elem.PositionRelatif.Y + 32))
 						{
-							if (Position.X + 32> elem.Position.X)
+							if (PositionRelatif.X + 32> elem.PositionRelatif.X)
 							{
-								if (Position.X < elem.Position.X)
+								if (PositionRelatif.X < elem.PositionRelatif.X)
 								{
 									if (elem.PV > 0 || elem.Type == 2)
 									{
@@ -221,11 +221,11 @@ namespace GameTest
 						idSbire = -1;
 						break;
 					case Direction.BOTTOM:
-						if ((Position.X <= elem.Position.X && Position.X + 32 >= elem.Position.X) || (Position.X <= elem.Position.X + 32 && Position.X + 32 >= elem.Position.X + 32))
+						if ((PositionRelatif.X <= elem.PositionRelatif.X && PositionRelatif.X + 32 >= elem.PositionRelatif.X) || (PositionRelatif.X <= elem.PositionRelatif.X + 32 && PositionRelatif.X + 32 >= elem.PositionRelatif.X + 32))
 						{
-							if (Position.Y + 32 > elem.Position.Y)
+							if (PositionRelatif.Y + 32 > elem.PositionRelatif.Y)
 							{
-								if (Position.Y < elem.Position.Y)
+								if (PositionRelatif.Y < elem.PositionRelatif.Y)
 								{
 									if (elem.PV > 0 || elem.Type == 2)
 									{
@@ -241,13 +241,13 @@ namespace GameTest
 				}
 			}
 
-			if ((Position.X <= 0) && (direction == Direction.LEFT))
+			if ((PositionRelatif.X <= 0) && (direction == Direction.LEFT))
 				return 1;
-			if ((Position.X >= width - 32) && (direction == Direction.RIGHT))
+			if ((PositionRelatif.X >= (world.map.Width*32) - 32) && (direction == Direction.RIGHT))
 				return 1;
-			if ((Position.Y <= 0) && (direction == Direction.TOP))
+			if ((PositionRelatif.Y <= 0) && (direction == Direction.TOP))
 				return 1;
-			if ((Position.Y >= height - 32) && (direction == Direction.BOTTOM))
+			if ((PositionRelatif.Y >= (world.map.Height*32) - 32) && (direction == Direction.BOTTOM))
 				return 1;
 			else
 				return 0;

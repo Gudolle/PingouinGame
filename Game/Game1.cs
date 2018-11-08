@@ -6,6 +6,8 @@ using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using TiledSharp;
 using GameTest.Core;
+using System.Linq;
+
 
 namespace GameTest
 {
@@ -163,7 +165,7 @@ namespace GameTest
 			spriteBatch.Begin();
             ListObject.player.world.DrawMapFirstCalc(spriteBatch);
             ListObject.player.world.DrawMapSecondCalc(spriteBatch);
-            foreach (Mob elem in ListObject.MesMob)
+            foreach (Mob elem in ListObject.MesMob.Where(x => x.world.nomFiles == ListObject.player.world.nomFiles).ToList())
 			{
 				if (elem.PV > 0 || elem.Type == 2)
 				{
