@@ -91,10 +91,10 @@ namespace GameTest.Core
             }
         }
 
-        public void Collision(int HEIGHT,int WIDTH, World world)
+        public void isTouche(int HEIGHT,int WIDTH)
         {
-            int col = Cool(HEIGHT, WIDTH, world);
-            if(col == 2)
+            Collision col = Cool(HEIGHT, WIDTH);
+            if(col == Collision.Monstre)
             {
                 Boum monBoum = new Boum()
                 {
@@ -107,7 +107,7 @@ namespace GameTest.Core
                 ListObject.MesBoum.Add(monBoum);
                 ListObject.RemoveTires.Add(this);
             }
-            else if(col == 1)
+            else if(col == Collision.Bordure)
             {
                 ListObject.RemoveTires.Add(this);
             }

@@ -46,41 +46,45 @@ namespace GameTest
 			tilesetTilesWide = tileset[currentTileset].Width / tileWidth;
 			tilesetTilesHigh = tileset[currentTileset].Height / tileHeight;
 		}
-		public void DrawMapFirstCalc(SpriteBatch spriteBatch)
+		public void DrawMapDessous(SpriteBatch spriteBatch)
 		{
             Vector2 PositionMap = CalculPlayer();
 
-			for (var i = 0; i < map.Layers[0].Tiles.Count; i++)
-			{
-				int gid = map.Layers[0].Tiles[i].Gid;
+            int Couche = map.Layers.Count >= 1 ? 2 : 1;
+            for (int c = 0; c < Couche; c++)
+            {
+                for (var i = 0; i < map.Layers[c].Tiles.Count; i++)
+                {
+                    int gid = map.Layers[c].Tiles[i].Gid;
 
-				// Empty tile, do nothing
-				if (gid != 0)
-				{
-                    init(gid);
-                    int tileFrame = gid - map.Tilesets[currentTileset].FirstGid;
+                    // Empty tile, do nothing
+                    if (gid != 0)
+                    {
+                        init(gid);
+                        int tileFrame = gid - map.Tilesets[currentTileset].FirstGid;
 
-                    
-					int column = tileFrame % tilesetTilesWide;
-					int row = (int)Math.Floor((double)tileFrame / (double)tilesetTilesWide);
 
-					float x = (i % map.Width) * map.TileWidth + PositionMap.X;
-                    float y = (float)Math.Floor(i / (double)map.Width) * map.TileHeight + PositionMap.Y;
+                        int column = tileFrame % tilesetTilesWide;
+                        int row = (int)Math.Floor((double)tileFrame / (double)tilesetTilesWide);
 
-					Rectangle tilesetRec = new Rectangle(tileWidth * column, tileHeight * row, tileWidth, tileHeight);
+                        float x = (i % map.Width) * map.TileWidth + PositionMap.X;
+                        float y = (float)Math.Floor(i / (double)map.Width) * map.TileHeight + PositionMap.Y;
 
-					spriteBatch.Draw(tileset[currentTileset], new Rectangle((int)x, (int)y, tileWidth, tileHeight), tilesetRec, Color.White);
-				}
-			}
+                        Rectangle tilesetRec = new Rectangle(tileWidth * column, tileHeight * row, tileWidth, tileHeight);
+
+                        spriteBatch.Draw(tileset[currentTileset], new Rectangle((int)x, (int)y, tileWidth, tileHeight), tilesetRec, Color.White);
+                    }
+                }
+            }
 		}
-        public void DrawMapSecondCalc(SpriteBatch spriteBatch)
+        public void DrawMapAudessus(SpriteBatch spriteBatch)
         {
-            if (map.Layers.Count > 1)
+            if (map.Layers.Count > 2)
             {
                 Vector2 PositionMap = CalculPlayer();
-                for (var i = 0; i < map.Layers[1].Tiles.Count; i++)
+                for (var i = 0; i < map.Layers[2].Tiles.Count; i++)
                 {
-                    int gid = map.Layers[1].Tiles[i].Gid;
+                    int gid = map.Layers[2].Tiles[i].Gid;
 
                     // Empty tile, do nothing
                     if (gid != 0)
@@ -100,6 +104,18 @@ namespace GameTest
                 }
             }
         }
+
+        public void GetInterraction()
+        {
+            TmxObjectGroup ObjectGroup = map.ObjectGroups.SingleOrDefault(x => x.Name == "Interraction");
+
+            //Collision
+            foreach(TmxObject item in ObjectGroup.Objects.Where(x => x.Type == "bloque"))
+            {
+
+            }
+        }
+
 
         private Vector2 CalculPlayer()
         {

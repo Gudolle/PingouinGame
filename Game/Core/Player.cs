@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using GameTest.Core;
+using System.Linq;
+using TiledSharp;
 
 namespace GameTest
 {
@@ -11,221 +13,182 @@ namespace GameTest
     {
         public int aff = 0;
         public int tape = 0;
-        public Boolean SpacePush = false; 
+        public Boolean SpacePush = false;
 
-        public Boolean PositionBlockY {get;set; }
+        public Boolean PositionBlockY { get; set; }
         public Boolean PositionBlockX { get; set; }
 
 
         public World CurrentWorld { get; set; }
 
-		public Player(int frameWidth, int frameHeight,int minX, int minY)
-			: base(frameWidth, frameHeight, minX, minY)
-		{
-			PV = 1000;
-			direction = Direction.RIGHT;
-			frameIndexWidth = framesIndex.Marche_2;
-			frameIndexHeight = Direction.RIGHT;
-		}
-		public void Move(KeyboardState state, int height, int width)
-		{
-			if (state.IsKeyDown(Keys.Z) || state.IsKeyDown(Keys.W))
-			{
-				direction = Direction.TOP;
-				int Possible = Cool(height, width, world);
+        public Player(int frameWidth, int frameHeight, int minX, int minY)
+            : base(frameWidth, frameHeight, minX, minY)
+        {
+            PV = 1000;
+            direction = Direction.RIGHT;
+            frameIndexWidth = framesIndex.Marche_2;
+            frameIndexHeight = Direction.RIGHT;
+        }
+        public void Move(KeyboardState state, int height, int width)
+        {
+            int Vitesse = 1;
+            if (state.IsKeyDown(Keys.LeftShift))
+                Vitesse = 3;
 
-				if (Possible == 0)
-				{
-					movement = true;
+
+            if (state.IsKeyDown(Keys.Z) || state.IsKeyDown(Keys.W))
+            {
+                direction = Direction.TOP;
+                Collision Possible = Cool(height, width, Vitesse);
+                if (Possible == Collision.Rien)
+                {
+                    movement = true;
                     if (!PositionBlockY)
                     {
-                        if (state.IsKeyDown(Keys.LeftShift))
-                        {
-                            Position.Y -= 3;
-                            PositionRelatif.Y -= 3;
-                        }
-                        else
-                        {
-                            PositionRelatif.Y -= 1;
-                            Position.Y -= 1;
-                        }
+                        PositionRelatif.Y -= Vitesse;
+                        Position.Y -= Vitesse;
                     }
                     else
                     {
-                        if (state.IsKeyDown(Keys.LeftShift))
-                            PositionRelatif.Y -= 3;
-                        else
-                            PositionRelatif.Y -= 1;
+                        PositionRelatif.Y -= Vitesse;
                     }
-				}
+                }
 
-			}
-			if (state.IsKeyDown(Keys.Q) || state.IsKeyDown(Keys.A))
-			{
-				direction = Direction.LEFT;
-				int Possible = Cool(height, width, world);
-				if (Possible == 0)
-				{
-					movement = true;
+            }
+            if (state.IsKeyDown(Keys.Q) || state.IsKeyDown(Keys.A))
+            {
+                direction = Direction.LEFT;
+                Collision Possible = Cool(height, width, Vitesse);
+                if (Possible == Collision.Rien)
+                {
+                    movement = true;
                     if (!PositionBlockX)
                     {
-                        if (state.IsKeyDown(Keys.LeftShift))
-                        {
-                            Position.X -= 3;
-                            PositionRelatif.X -= 3;
-                        }
-                        else
-                        {
-                            PositionRelatif.X -= 1;
-                            Position.X -= 1;
-                        }
+                        PositionRelatif.X -= Vitesse;
+                        Position.X -= Vitesse;
                     }
                     else
                     {
-                        if (state.IsKeyDown(Keys.LeftShift))
-                            PositionRelatif.X -= 3;
-                        else
-                            PositionRelatif.X -= 1;
+                        PositionRelatif.X -= Vitesse;
                     }
 
-				}
-			}
-			if (state.IsKeyDown(Keys.S))
-			{
-				direction = Direction.BOTTOM;
-				int Possible = Cool(height, width, world);
-
-				if (Possible == 0)
-				{
-					movement = true;
+                }
+            }
+            if (state.IsKeyDown(Keys.S))
+            {
+                direction = Direction.BOTTOM;
+                Collision Possible = Cool(height, width, Vitesse);
+                if (Possible == Collision.Rien)
+                {
+                    movement = true;
                     if (!PositionBlockY)
                     {
-                        if (state.IsKeyDown(Keys.LeftShift))
-                        {
-                            Position.Y += 3;
-                            PositionRelatif.Y += 3;
-                        }
-                        else
-                        {
-                            PositionRelatif.Y += 1;
-                            Position.Y += 1;
-                        }
+                        Position.Y += Vitesse;
+                        PositionRelatif.Y += Vitesse;
                     }
                     else
                     {
-                        if (state.IsKeyDown(Keys.LeftShift))
-                            PositionRelatif.Y += 3;
-                        else
-                            PositionRelatif.Y += 1;
+                        PositionRelatif.Y += Vitesse;
                     }
                 }
-			}
-			if (state.IsKeyDown(Keys.D))
-			{
-				direction = Direction.RIGHT;
-				int Possible = Cool(height, width, world);
+            }
+            if (state.IsKeyDown(Keys.D))
+            {
+                direction = Direction.RIGHT;
 
-				if (Possible == 0)
-				{
-					movement = true;
+                Collision Possible = Cool(height, width, Vitesse);
+                if (Possible == Collision.Rien)
+                {
+                    movement = true;
                     if (!PositionBlockX)
                     {
-                        if (state.IsKeyDown(Keys.LeftShift))
-                        {
-                            Position.X += 3;
-                            PositionRelatif.X += 3;
-                        }
-                        else
-                        {
-                            PositionRelatif.X += 1;
-                            Position.X += 1;
-                        }
+                        Position.X += Vitesse;
+                        PositionRelatif.X += Vitesse;
                     }
                     else
                     {
-                        if (state.IsKeyDown(Keys.LeftShift))
-                            PositionRelatif.X += 3;
-                        else
-                            PositionRelatif.X += 1;
+                        PositionRelatif.X += Vitesse;
                     }
                 }
-				else if(Possible == 1) { 
-					Position.X = 0;
+                else if (Possible == Collision.Bordure)
+                {
+                    Position.X = 0;
                     PositionRelatif = Position;
                     world = ListObject.MesMondes[1];
                 }
             }
 
-			if(!state.IsKeyDown(Keys.D) && !state.IsKeyDown(Keys.Z) && !state.IsKeyDown(Keys.Q) && !state.IsKeyDown(Keys.S))
-			{
-				movement = false;
-			}
-		}
+            if (!state.IsKeyDown(Keys.D) && !state.IsKeyDown(Keys.Z) && !state.IsKeyDown(Keys.Q) && !state.IsKeyDown(Keys.S))
+            {
+                movement = false;
+            }
+        }
 
 
         public void Action(KeyboardState state)
-		{
+        {
             #region ActionPnj
             if (state.IsKeyDown(Keys.Enter) && idSbire != -1)
-			{
-				if (Monstre.Type == 2 && aff == 0 && !Affichage)
-				{
-					Affichage = true;
-					TextSelec = Monstre.Text;
-					aff++;
-				}
-				else if(aff == 0){
-					TextSelec = "";
-					Affichage = false;
-					aff++;
-				}
-			}
-			else
-			{
-				aff = 0;
-			}
+            {
+                if (Monstre.Type == 2 && aff == 0 && !Affichage)
+                {
+                    Affichage = true;
+                    TextSelec = Monstre.Text;
+                    aff++;
+                }
+                else if (aff == 0)
+                {
+                    TextSelec = "";
+                    Affichage = false;
+                    aff++;
+                }
+            }
+            else
+            {
+                aff = 0;
+            }
             #endregion
 
             #region TapeMob
             if (state.IsKeyDown(Keys.F) && idSbire != -1)
-			{
-				if (Monstre.Type == 1 && tape == 0)
-				{
-					switch (direction)
-					{
-						case Direction.TOP:
+            {
+                if (Monstre.Type == 1 && tape == 0)
+                {
+                    switch (direction)
+                    {
+                        case Direction.TOP:
                             Monstre.Position.Y -= 2;
                             Monstre.direction = Direction.BOTTOM;
-							break;
-						case Direction.BOTTOM:
+                            break;
+                        case Direction.BOTTOM:
                             Monstre.Position.Y += 2;
                             Monstre.direction = Direction.TOP;
-							break;
-						case Direction.LEFT:
+                            break;
+                        case Direction.LEFT:
                             Monstre.Position.X -= 2;
                             Monstre.direction = Direction.RIGHT;
-							break;
-						case Direction.RIGHT:
+                            break;
+                        case Direction.RIGHT:
                             Monstre.Position.X += 2;
                             Monstre.direction = Direction.LEFT;
-							break;	
+                            break;
 
-					}
+                    }
                     Monstre.PV -= 10;
                     Monstre.Direct = 4;
                     Monstre.NbDeplacement = 0;
-					tape++;
-				}
-			}
-			else
-			{
-				tape = 0;
-			}
+                    tape++;
+                }
+            }
+            else
+            {
+                tape = 0;
+            }
             #endregion
 
             #region tire
-            
-            if (state.IsKeyDown(Keys.Space) )
+
+            if (state.IsKeyDown(Keys.Space))
             {
                 if (!SpacePush)
                 {
@@ -268,8 +231,9 @@ namespace GameTest
             Shot MonTire = new Shot(direction, PositionRelatif);
             MonTire.Position.Y = Position.Y + 16;
             MonTire.Position.X = Position.X + 16;
+            MonTire.world = world;
             ListObject.MesTires.Add(MonTire);
         }
 
-	}
+    }
 }

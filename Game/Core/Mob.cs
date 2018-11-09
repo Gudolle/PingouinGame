@@ -52,18 +52,18 @@ namespace GameTest
             }
             
         }
-		public void Move(int nb, int height, int width, World world)
+		public void Move(int nb, int height, int width)
 		{
 			if (NbDeplacement == 32)
 			{
 				Direct = nb;
 				NbDeplacement = 0;
 			}
-            
+
+            Collision Possible = Cool(height, width);
             if (Direct == 0)
             {
                 direction = Direction.TOP;
-                int Possible = Cool(height, width, world);
 
                 if (CoolMob(ListObject.player.Position))
                 {
@@ -77,7 +77,7 @@ namespace GameTest
                 }
                 else
                 {
-                    if (Possible == 0)
+                    if (Possible == Collision.Rien)
                     {
 
                         PositionRelatif.Y -= 1;
@@ -93,7 +93,6 @@ namespace GameTest
             if (Direct == 1)
             {
                 direction = Direction.LEFT;
-                int Possible = Cool(height, width, world);
                 if (CoolMob(ListObject.player.Position))
                 {
                     movement = false;
@@ -106,7 +105,7 @@ namespace GameTest
                 }
                 else
                 {
-                    if (Possible == 0)
+                    if (Possible == Collision.Rien)
                     {
 
                         PositionRelatif.X -= 1;
@@ -122,7 +121,6 @@ namespace GameTest
             if (Direct == 2)
             {
                 direction = Direction.BOTTOM;
-                int Possible = Cool(height, width, world);
                 if (CoolMob(ListObject.player.Position))
                 {
                     movement = false;
@@ -135,7 +133,7 @@ namespace GameTest
                 }
                 else
                 {
-                    if (Possible == 0)
+                    if (Possible == Collision.Rien)
                     {
 
                         PositionRelatif.Y += 1;
@@ -152,7 +150,6 @@ namespace GameTest
             if (Direct == 3)
             {
                 direction = Direction.RIGHT;
-                int Possible = Cool(height, width, world);
                 if (CoolMob(ListObject.player.Position))
                 {
                     movement = false;
@@ -165,7 +162,7 @@ namespace GameTest
                 }
                 else
                 {
-                    if (Possible == 0)
+                    if (Possible == Collision.Rien)
                     {
 
                         PositionRelatif.X += 1;

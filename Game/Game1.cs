@@ -88,7 +88,7 @@ namespace GameTest
             ListObject.player = new Player(32, 32, 0, 0);
             ListObject.player.name = "Pingouin";
             ListObject.player.PV = 150;
-            ListObject.player.world = ListObject.MesMondes[0];
+            ListObject.player.world = ListObject.MesMondes[1];
 
             Shot.TextureShotLeft = Content.Load<Texture2D>("shoot/shootleft");
             Shot.TextureShotRight = Content.Load<Texture2D>("shoot/shootright");
@@ -100,7 +100,7 @@ namespace GameTest
 
             ListObject.player.Texture = Content.Load<Texture2D>("player/player");
             ListObject.player.FenetreText = Content.Load<Texture2D>("text");
-            ListObject.player.InitialisePosition(new Vector2(WIDTH / 2, HEIGHT / 2));
+            ListObject.player.InitialisePosition(new Vector2((ListObject.player.world.map.Width*32) / 2, (ListObject.player.world.map.Height*32) / 2), new Vector2(WIDTH / 2, HEIGHT / 2));
 
 
             Mob.TextureMonstre = Content.Load<Texture2D>("mob/mob");
@@ -137,7 +137,7 @@ namespace GameTest
 
             foreach (Shot item in ListObject.MesTires)
             {
-                item.Collision(HEIGHT, WIDTH, ListObject.player.world);
+                item.isTouche(HEIGHT, WIDTH);
                 item.Move();
             }
             foreach (Boum item in ListObject.MesBoum)
@@ -150,7 +150,7 @@ namespace GameTest
 				elem.UpdateFrame(gameTime);
                 //elem.Tape(gameTime);
                 if (elem.Type == 1)
-					elem.Move(rand.Next(0, 5), HEIGHT, WIDTH, ListObject.player.world);
+					elem.Move(rand.Next(0, 5), HEIGHT, WIDTH);
 			}
 		}
 
@@ -164,8 +164,9 @@ namespace GameTest
 
 			//TODO: Add your drawing code here
 			spriteBatch.Begin();
-            ListObject.player.world.DrawMapFirstCalc(spriteBatch);
-            ListObject.player.world.DrawMapSecondCalc(spriteBatch);
+            ListObject.player.world.DrawMapDessous(spriteBatch);
+
+
             foreach (Mob elem in ListObject.MesMob.Where(x => x.world.nomFiles == ListObject.player.world.nomFiles).ToList())
 			{
 				if (elem.PV > 0 || elem.Type == 2)
@@ -196,10 +197,10 @@ namespace GameTest
                 ListObject.player.DrawTextPnj(spriteBatch, font, fontOrigin, HEIGHT, WIDTH);
 
 
-			spriteBatch.End();
 
-
-
+            ListObject.player.world.DrawMapAudessus(spriteBatch);
+            spriteBatch.End();
+            
 
 			base.Draw(gameTime);
 		}

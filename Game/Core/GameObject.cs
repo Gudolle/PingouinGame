@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Linq;
+using TiledSharp;
 using GameTest.FonctionUtile;
 
 namespace GameTest
@@ -70,11 +71,19 @@ namespace GameTest
 
 		public enum framesIndex
 		{
-
 			Marche_1 = 0,
 			Marche_2 = 1,
 			Marche_3 = 2,
 		}
+        public enum Collision
+        {
+            Rien = 0,
+            Bordure = 1,
+            Monstre = 2,
+            Bloque = 3
+        }
+
+
         
 		public void DrawAnimation(SpriteBatch spriteBatch)
 		{
@@ -97,9 +106,14 @@ namespace GameTest
 		}
 
 
-        internal void InitialisePosition(Vector2 _Position)
+        public void InitialisePosition(Vector2 _Position)
         {
             Position = _Position;
+            PositionRelatif = _Position;
+        }
+        public void InitialisePosition(Vector2 _Position, Vector2 positionEcran)
+        {
+            Position = positionEcran;
             PositionRelatif = _Position;
         }
         //Collision !
@@ -162,103 +176,149 @@ namespace GameTest
 			}
 			return false;
 		}
-		public int Cool(int height, int width, World world)
-		{
-			//Par rapport a un mob
-			foreach (Mob elem in ListObject.MesMob.Where(x => x.world.nomFiles == ListObject.player.world.nomFiles).ToList())
-			{
-				switch (direction)
-				{
-					case Direction.TOP:
-						if ((PositionRelatif.X <= elem.PositionRelatif.X && PositionRelatif.X + 32 >= elem.PositionRelatif.X) || (PositionRelatif.X <= elem.PositionRelatif.X + 32 && PositionRelatif.X + 32 >= elem.PositionRelatif.X + 32))
-						{
-							if (PositionRelatif.Y > elem.PositionRelatif.Y)
-							{
-								if (PositionRelatif.Y - 32 < elem.PositionRelatif.Y)
-								{
-									if (elem.PV > 0 || elem.Type == 2)
-									{
-										idSbire = elem.id;
+
+        public Collision Cool(int height, int width, int vitesse = 1)
+        {
+            if (world.map.ObjectGroups.Count > 0)
+            {
+                foreach (TmxObject item in world.map.ObjectGroups[0].Objects.Where(x => x.Type == "Bloque").ToList())
+                {
+                    Vector2 BloqueA = new Vector2((float)item.X, (float)item.Y);
+                    Vector2 BloqueB = new Vector2((float)(item.X + item.Width), (float)(item.Y + item.Height));
+                    Vector2 PositionFutur = PositionRelatif;
+                    
+                    switch (direction)
+                    {
+                        case Direction.TOP:
+                            PositionFutur.Y -= vitesse;
+                            if (PositionFutur.X + 32 > ((int)BloqueA.X + 1) && PositionFutur.X < BloqueB.X && PositionFutur.Y + 16 > BloqueA.Y && PositionFutur.Y + 16 < BloqueB.Y)
+                            {
+
+                                return Collision.Bloque;
+                            }
+                            break;
+                        case Direction.BOTTOM:
+
+                            PositionFutur.Y += vitesse;
+                            if (PositionFutur.X + 32 > ((int)BloqueA.X + 1 ) && PositionFutur.X  < BloqueB.X && PositionFutur.Y + 32 > BloqueA.Y && PositionFutur.Y + 32 < BloqueB.Y)
+                            {
+                                return Collision.Bloque;
+                            }
+                            break;
+                        case Direction.LEFT:
+                            PositionFutur.X -= vitesse;
+                            if (PositionFutur.X > BloqueA.X && PositionFutur.X < BloqueB.X && PositionFutur.Y + 32 > ((int)BloqueA.Y + 1) && PositionFutur.Y +16  < BloqueB.Y)
+                            {
+                                return Collision.Bloque;
+                            }
+                            break;
+                        case Direction.RIGHT:
+                            PositionFutur.X += vitesse;
+                            if (PositionFutur.X + 32 > BloqueA.X && PositionFutur.X + 32 < BloqueB.X && PositionFutur.Y + 32> ((int)BloqueA.Y + 1) && PositionFutur.Y + 16 < BloqueB.Y)
+                            {
+                                return Collision.Bloque;
+                            }
+                            break;
+                    }
+                }
+            }
+
+
+            //Par rapport a un mob
+            foreach (Mob elem in ListObject.MesMob.Where(x => x.world.nomFiles == ListObject.player.world.nomFiles).ToList())
+            {
+                switch (direction)
+                {
+                    case Direction.TOP:
+                        if ((PositionRelatif.X <= elem.PositionRelatif.X && PositionRelatif.X + 32 >= elem.PositionRelatif.X) || (PositionRelatif.X <= elem.PositionRelatif.X + 32 && PositionRelatif.X >= elem.PositionRelatif.X))
+                        {
+                            if (PositionRelatif.Y > elem.PositionRelatif.Y)
+                            {
+                                if (PositionRelatif.Y - 32 < elem.PositionRelatif.Y)
+                                {
+                                    if (elem.Type == 2)
+                                    {
+                                        idSbire = elem.id;
                                         Monstre = elem.Type == 2 ? null : elem;
-										return 2;
-									}
-								}
-							}
-						}
-						idSbire = -1;
-						break;
-					case Direction.LEFT:
-						if((PositionRelatif.Y <= elem.PositionRelatif.Y && PositionRelatif.Y + 32 >= elem.PositionRelatif.Y) || (PositionRelatif.Y <= elem.PositionRelatif.Y+32 && PositionRelatif.Y +32 >= elem.PositionRelatif.Y + 32))
-						{
-							if (PositionRelatif.X > elem.PositionRelatif.X)
-							{
-								if (PositionRelatif.X - 32 < elem.PositionRelatif.X)
-								{
-									if (elem.PV > 0 || elem.Type == 2)
-									{
-										idSbire = elem.id;
+                                        return Collision.Monstre;
+                                    }
+                                }
+                            }
+                        }
+                        idSbire = -1;
+                        break;
+                    case Direction.LEFT:
+                        if ((PositionRelatif.Y <= elem.PositionRelatif.Y && PositionRelatif.Y + 32 >= elem.PositionRelatif.Y) || (PositionRelatif.Y <= elem.PositionRelatif.Y + 32 && PositionRelatif.Y >= elem.PositionRelatif.Y))
+                        {
+                            if (PositionRelatif.X > elem.PositionRelatif.X)
+                            {
+                                if (PositionRelatif.X - 32 < elem.PositionRelatif.X)
+                                {
+                                    if (elem.Type == 2)
+                                    {
+                                        idSbire = elem.id;
                                         Monstre = elem.Type == 2 ? null : elem; ;
-                                        return 2;
-									}
-								}
-							}
-						}
-						idSbire = -1;
-						break;
-					case Direction.RIGHT:
-						if ((PositionRelatif.Y <= elem.PositionRelatif.Y && PositionRelatif.Y + 32 >= elem.PositionRelatif.Y) || (PositionRelatif.Y <= elem.PositionRelatif.Y + 32 && PositionRelatif.Y + 32 >= elem.PositionRelatif.Y + 32))
-						{
-							if (PositionRelatif.X + 32> elem.PositionRelatif.X)
-							{
-								if (PositionRelatif.X < elem.PositionRelatif.X)
-								{
-									if (elem.PV > 0 || elem.Type == 2)
-									{
-										idSbire = elem.id;
+                                        return Collision.Monstre;
+                                    }
+                                }
+                            }
+                        }
+                        idSbire = -1;
+                        break;
+                    case Direction.RIGHT:
+                        if ((PositionRelatif.Y <= elem.PositionRelatif.Y && PositionRelatif.Y + 32 >= elem.PositionRelatif.Y) || (PositionRelatif.Y <= elem.PositionRelatif.Y + 32 && PositionRelatif.Y >= elem.PositionRelatif.Y))
+                        {
+                            if (PositionRelatif.X + 32 > elem.PositionRelatif.X)
+                            {
+                                if (PositionRelatif.X < elem.PositionRelatif.X)
+                                {
+                                    if (elem.Type == 2)
+                                    {
+                                        idSbire = elem.id;
                                         Monstre = elem.Type == 2 ? null : elem; ;
-                                        return 2;
-									}
-								}
-							}
-						}
-						idSbire = -1;
-						break;
-					case Direction.BOTTOM:
-						if ((PositionRelatif.X <= elem.PositionRelatif.X && PositionRelatif.X + 32 >= elem.PositionRelatif.X) || (PositionRelatif.X <= elem.PositionRelatif.X + 32 && PositionRelatif.X + 32 >= elem.PositionRelatif.X + 32))
-						{
-							if (PositionRelatif.Y + 32 > elem.PositionRelatif.Y)
-							{
-								if (PositionRelatif.Y < elem.PositionRelatif.Y)
-								{
-									if (elem.PV > 0 || elem.Type == 2)
-									{
-										idSbire = elem.id;
+                                        return Collision.Monstre;
+                                    }
+                                }
+                            }
+                        }
+                        idSbire = -1;
+                        break;
+                    case Direction.BOTTOM:
+                        if ((PositionRelatif.X <= elem.PositionRelatif.X && PositionRelatif.X + 32 >= elem.PositionRelatif.X) || (PositionRelatif.X <= elem.PositionRelatif.X + 32 && PositionRelatif.X >= elem.PositionRelatif.X))
+                        {
+                            if (PositionRelatif.Y + 32 > elem.PositionRelatif.Y)
+                            {
+                                if (PositionRelatif.Y < elem.PositionRelatif.Y)
+                                {
+                                    if (elem.Type == 2)
+                                    {
+                                        idSbire = elem.id;
                                         Monstre = elem.Type == 2 ? null : elem; ;
-                                        return 2;
-									}
-								}
-							}
-						}
-						idSbire = -1;
-						break;
-				}
-			}
+                                        return Collision.Monstre;
+                                    }
+                                }
+                            }
+                        }
+                        idSbire = -1;
+                        break;
+                }
+            }
 
-			if ((PositionRelatif.X <= 0) && (direction == Direction.LEFT))
-				return 1;
-			if ((PositionRelatif.X >= (world.map.Width*32) - 32) && (direction == Direction.RIGHT))
-				return 1;
-			if ((PositionRelatif.Y <= 0) && (direction == Direction.TOP))
-				return 1;
-			if ((PositionRelatif.Y >= (world.map.Height*32) - 32) && (direction == Direction.BOTTOM))
-				return 1;
-			else
-				return 0;
-		}
+            if ((PositionRelatif.X <= 0) && (direction == Direction.LEFT))
+                return Collision.Bordure;
+            if ((PositionRelatif.X >= (world.map.Width * 32) - 32) && (direction == Direction.RIGHT))
+                return Collision.Bordure;
+            if ((PositionRelatif.Y <= 0) && (direction == Direction.TOP))
+                return Collision.Bordure;
+            if ((PositionRelatif.Y >= (world.map.Height * 32) - 32) && (direction == Direction.BOTTOM))
+                return Collision.Bordure;
+            else
+                return Collision.Rien;
+        }
 
 
-		//Update !
-		public void UpdateFrame(GameTime gameTime)
+        //Update !
+        public void UpdateFrame(GameTime gameTime)
 		{
 			time += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
