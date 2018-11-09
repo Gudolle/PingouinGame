@@ -23,6 +23,9 @@ namespace GameTest.Core
         {
             PositionDepart = _positionRelative;
             PositionRelatif = _positionRelative;
+            PositionRelatif.X += 16;
+            PositionRelatif.Y += 16;
+
 
             direction = _direction;
             switch (_direction)
@@ -100,14 +103,12 @@ namespace GameTest.Core
                 {
                     PositionRelatif = PositionRelatif
                 };
-                monBoum.PositionRelatif.X -= 50;
-                monBoum.PositionRelatif.Y -= 50;
                 if(Monstre != null)
                     Monstre.PV -= 30;
                 ListObject.MesBoum.Add(monBoum);
                 ListObject.RemoveTires.Add(this);
             }
-            else if(col == Collision.Bordure)
+            else if(col == Collision.Bordure || col == Collision.Bloque)
             {
                 ListObject.RemoveTires.Add(this);
             }

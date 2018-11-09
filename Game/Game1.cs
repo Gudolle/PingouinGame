@@ -74,7 +74,7 @@ namespace GameTest
             foreach (World item in ListObject.MesMondes)
             {
 
-                item.map = new TmxMap(String.Format("Content/Map/{0}", item.nomFiles));
+                item.map = new TmxMap(string.Format("Content/Map/{0}", item.nomFiles));
 
                 foreach (TmxTileset tiles in item.map.Tilesets) { 
                     item.tileset.Add(Content.Load<Texture2D>(String.Format("tiles/{0}", tiles.Name.ToString())));
@@ -191,7 +191,6 @@ namespace GameTest
             ListObject.player.DrawId(spriteBatch, font, fontOrigin);
             ListObject.player.drawPVplayer(spriteBatch, font, fontOrigin);
             ListObject.player.DrawAnimation(spriteBatch);
-            ListObject.player.DrawName(spriteBatch, font, fontOrigin);
 
 			if (ListObject.player.idSbire != -1 && ListObject.player.Affichage)
                 ListObject.player.DrawTextPnj(spriteBatch, font, fontOrigin, HEIGHT, WIDTH);
@@ -199,6 +198,7 @@ namespace GameTest
 
 
             ListObject.player.world.DrawMapAudessus(spriteBatch);
+            ListObject.player.DrawName(spriteBatch, font, fontOrigin);
             spriteBatch.End();
             
 

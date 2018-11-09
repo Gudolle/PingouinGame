@@ -40,18 +40,15 @@ namespace GameTest
             {
                 direction = Direction.TOP;
                 Collision Possible = Cool(height, width, Vitesse);
-                if (Possible == Collision.Rien)
+                switch (Possible)
                 {
-                    movement = true;
-                    if (!PositionBlockY)
-                    {
-                        PositionRelatif.Y -= Vitesse;
-                        Position.Y -= Vitesse;
-                    }
-                    else
-                    {
-                        PositionRelatif.Y -= Vitesse;
-                    }
+                    case Collision.Rien:
+                        MoveAction(-Vitesse);
+                        break;
+                    case Collision.Portail:
+                        ChangeMonde();
+                        break;
+
                 }
 
             }
@@ -59,37 +56,29 @@ namespace GameTest
             {
                 direction = Direction.LEFT;
                 Collision Possible = Cool(height, width, Vitesse);
-                if (Possible == Collision.Rien)
+                switch (Possible)
                 {
-                    movement = true;
-                    if (!PositionBlockX)
-                    {
-                        PositionRelatif.X -= Vitesse;
-                        Position.X -= Vitesse;
-                    }
-                    else
-                    {
-                        PositionRelatif.X -= Vitesse;
-                    }
-
+                    case Collision.Rien:
+                        MoveAction(-Vitesse);
+                        break;
+                    case Collision.Portail:
+                        ChangeMonde();
+                        break;
                 }
             }
             if (state.IsKeyDown(Keys.S))
             {
                 direction = Direction.BOTTOM;
                 Collision Possible = Cool(height, width, Vitesse);
-                if (Possible == Collision.Rien)
+                switch (Possible)
                 {
-                    movement = true;
-                    if (!PositionBlockY)
-                    {
-                        Position.Y += Vitesse;
-                        PositionRelatif.Y += Vitesse;
-                    }
-                    else
-                    {
-                        PositionRelatif.Y += Vitesse;
-                    }
+                    case Collision.Rien:
+                        MoveAction(Vitesse);
+                        break;
+                    case Collision.Portail:
+                        ChangeMonde();
+                        break;
+
                 }
             }
             if (state.IsKeyDown(Keys.D))
@@ -97,24 +86,14 @@ namespace GameTest
                 direction = Direction.RIGHT;
 
                 Collision Possible = Cool(height, width, Vitesse);
-                if (Possible == Collision.Rien)
+                switch (Possible)
                 {
-                    movement = true;
-                    if (!PositionBlockX)
-                    {
-                        Position.X += Vitesse;
-                        PositionRelatif.X += Vitesse;
-                    }
-                    else
-                    {
-                        PositionRelatif.X += Vitesse;
-                    }
-                }
-                else if (Possible == Collision.Bordure)
-                {
-                    Position.X = 0;
-                    PositionRelatif = Position;
-                    world = ListObject.MesMondes[1];
+                    case Collision.Rien:
+                        MoveAction(Vitesse);
+                        break;
+                    case Collision.Portail:
+                        ChangeMonde();
+                        break;
                 }
             }
 
@@ -124,6 +103,44 @@ namespace GameTest
             }
         }
 
+        private void ChangeMonde()
+        {
+            world = ListObject.MesMondes[Change.ID];
+            PositionRelatif = new Vector2(Change.X, Change.Y);
+        }
+
+        private void MoveAction(int Vitesse)
+        {
+            switch (direction)
+            {
+                case Direction.TOP:
+                case Direction.BOTTOM:
+                    movement = true;
+                    if (!PositionBlockY)
+                    {
+                        PositionRelatif.Y += Vitesse;
+                        Position.Y += Vitesse;
+                    }
+                    else
+                    {
+                        PositionRelatif.Y += Vitesse;
+                    }
+                    break;
+                case Direction.LEFT:
+                case Direction.RIGHT:
+                    movement = true;
+                    if (!PositionBlockY)
+                    {
+                        Position.X += Vitesse;
+                        PositionRelatif.X += Vitesse;
+                    }
+                    else
+                    {
+                        PositionRelatif.X += Vitesse;
+                    }
+                    break;
+            }
+        }
 
         public void Action(KeyboardState state)
         {
@@ -229,8 +246,6 @@ namespace GameTest
         public void Tire()
         {
             Shot MonTire = new Shot(direction, PositionRelatif);
-            MonTire.Position.Y = Position.Y + 16;
-            MonTire.Position.X = Position.X + 16;
             MonTire.world = world;
             ListObject.MesTires.Add(MonTire);
         }

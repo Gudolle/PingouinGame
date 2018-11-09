@@ -31,8 +31,10 @@ namespace GameTest
 
         public Mob Monstre { get; set; }
 
+        public ChangeWorld Change { get; set; }
 
-		public int idSbire { get; set; }
+
+        public int idSbire { get; set; }
 		public string TextSelec { get; set;}
 		public bool Affichage { get; set;}
 
@@ -80,7 +82,8 @@ namespace GameTest
             Rien = 0,
             Bordure = 1,
             Monstre = 2,
-            Bloque = 3
+            Bloque = 3,
+            Portail = 4
         }
 
 
@@ -101,7 +104,7 @@ namespace GameTest
 		{
 			spriteBatch.DrawString(
 				font, name,
-				new Vector2(Position.X, Position.Y - 20),
+				new Vector2(Position.X-8, Position.Y - 20),
 				Color.White, 0, fontOrigin, 1, SpriteEffects.None, 0);
 		}
 
@@ -177,11 +180,31 @@ namespace GameTest
 			return false;
 		}
 
+
+        public Collision GetElement(TmxObject item)
+        {
+            switch (item.Type)
+            {
+                case "Bloque":
+                    return Collision.Bloque;
+                case "Portail":
+                    Change = new ChangeWorld()
+                    {
+                        ID = int.Parse(item.Properties["Monde"]),
+                        X = int.Parse(item.Properties["X"]),
+                        Y = int.Parse(item.Properties["Y"])
+                    };
+
+                    return Collision.Portail;
+                default:
+                    return Collision.Bloque;
+            }
+        }
         public Collision Cool(int height, int width, int vitesse = 1)
         {
             if (world.map.ObjectGroups.Count > 0)
             {
-                foreach (TmxObject item in world.map.ObjectGroups[0].Objects.Where(x => x.Type == "Bloque").ToList())
+                foreach (TmxObject item in world.map.ObjectGroups[0].Objects.ToList())
                 {
                     Vector2 BloqueA = new Vector2((float)item.X, (float)item.Y);
                     Vector2 BloqueB = new Vector2((float)(item.X + item.Width), (float)(item.Y + item.Height));
@@ -193,8 +216,8 @@ namespace GameTest
                             PositionFutur.Y -= vitesse;
                             if (PositionFutur.X + 32 > ((int)BloqueA.X + 1) && PositionFutur.X < BloqueB.X && PositionFutur.Y + 16 > BloqueA.Y && PositionFutur.Y + 16 < BloqueB.Y)
                             {
-
-                                return Collision.Bloque;
+                                
+                                return GetElement(item);
                             }
                             break;
                         case Direction.BOTTOM:
@@ -202,106 +225,74 @@ namespace GameTest
                             PositionFutur.Y += vitesse;
                             if (PositionFutur.X + 32 > ((int)BloqueA.X + 1 ) && PositionFutur.X  < BloqueB.X && PositionFutur.Y + 32 > BloqueA.Y && PositionFutur.Y + 32 < BloqueB.Y)
                             {
-                                return Collision.Bloque;
+                                return GetElement(item);
                             }
                             break;
                         case Direction.LEFT:
                             PositionFutur.X -= vitesse;
                             if (PositionFutur.X > BloqueA.X && PositionFutur.X < BloqueB.X && PositionFutur.Y + 32 > ((int)BloqueA.Y + 1) && PositionFutur.Y +16  < BloqueB.Y)
                             {
-                                return Collision.Bloque;
+                                return GetElement(item);
                             }
                             break;
                         case Direction.RIGHT:
                             PositionFutur.X += vitesse;
                             if (PositionFutur.X + 32 > BloqueA.X && PositionFutur.X + 32 < BloqueB.X && PositionFutur.Y + 32> ((int)BloqueA.Y + 1) && PositionFutur.Y + 16 < BloqueB.Y)
                             {
-                                return Collision.Bloque;
+                                return GetElement(item);
                             }
                             break;
                     }
                 }
             }
-
-
             //Par rapport a un mob
             foreach (Mob elem in ListObject.MesMob.Where(x => x.world.nomFiles == ListObject.player.world.nomFiles).ToList())
             {
+                Vector2 BloqueA = new Vector2((float)elem.PositionRelatif.X, (float)elem.PositionRelatif.Y);
+                Vector2 BloqueB = new Vector2((float)(elem.PositionRelatif.X + 32), (float)(elem.PositionRelatif.Y + 32));
+                Vector2 PositionFutur = PositionRelatif;
+
                 switch (direction)
                 {
                     case Direction.TOP:
-                        if ((PositionRelatif.X <= elem.PositionRelatif.X && PositionRelatif.X + 32 >= elem.PositionRelatif.X) || (PositionRelatif.X <= elem.PositionRelatif.X + 32 && PositionRelatif.X >= elem.PositionRelatif.X))
+                        PositionFutur.Y -= vitesse;
+                        if (PositionFutur.X + 32 > ((int)BloqueA.X + 1) && PositionFutur.X < BloqueB.X && PositionFutur.Y > BloqueA.Y && PositionFutur.Y < BloqueB.Y)
                         {
-                            if (PositionRelatif.Y > elem.PositionRelatif.Y)
-                            {
-                                if (PositionRelatif.Y - 32 < elem.PositionRelatif.Y)
-                                {
-                                    if (elem.Type == 2)
-                                    {
-                                        idSbire = elem.id;
-                                        Monstre = elem.Type == 2 ? null : elem;
-                                        return Collision.Monstre;
-                                    }
-                                }
-                            }
+                            idSbire = elem.id;
+                            Monstre = elem;
+                            return Collision.Monstre;
                         }
-                        idSbire = -1;
-                        break;
-                    case Direction.LEFT:
-                        if ((PositionRelatif.Y <= elem.PositionRelatif.Y && PositionRelatif.Y + 32 >= elem.PositionRelatif.Y) || (PositionRelatif.Y <= elem.PositionRelatif.Y + 32 && PositionRelatif.Y >= elem.PositionRelatif.Y))
-                        {
-                            if (PositionRelatif.X > elem.PositionRelatif.X)
-                            {
-                                if (PositionRelatif.X - 32 < elem.PositionRelatif.X)
-                                {
-                                    if (elem.Type == 2)
-                                    {
-                                        idSbire = elem.id;
-                                        Monstre = elem.Type == 2 ? null : elem; ;
-                                        return Collision.Monstre;
-                                    }
-                                }
-                            }
-                        }
-                        idSbire = -1;
-                        break;
-                    case Direction.RIGHT:
-                        if ((PositionRelatif.Y <= elem.PositionRelatif.Y && PositionRelatif.Y + 32 >= elem.PositionRelatif.Y) || (PositionRelatif.Y <= elem.PositionRelatif.Y + 32 && PositionRelatif.Y >= elem.PositionRelatif.Y))
-                        {
-                            if (PositionRelatif.X + 32 > elem.PositionRelatif.X)
-                            {
-                                if (PositionRelatif.X < elem.PositionRelatif.X)
-                                {
-                                    if (elem.Type == 2)
-                                    {
-                                        idSbire = elem.id;
-                                        Monstre = elem.Type == 2 ? null : elem; ;
-                                        return Collision.Monstre;
-                                    }
-                                }
-                            }
-                        }
-                        idSbire = -1;
                         break;
                     case Direction.BOTTOM:
-                        if ((PositionRelatif.X <= elem.PositionRelatif.X && PositionRelatif.X + 32 >= elem.PositionRelatif.X) || (PositionRelatif.X <= elem.PositionRelatif.X + 32 && PositionRelatif.X >= elem.PositionRelatif.X))
+
+                        PositionFutur.Y += vitesse;
+                        if (PositionFutur.X + 32 > ((int)BloqueA.X + 1) && PositionFutur.X < BloqueB.X && PositionFutur.Y + 32 > BloqueA.Y && PositionFutur.Y + 32 < BloqueB.Y)
                         {
-                            if (PositionRelatif.Y + 32 > elem.PositionRelatif.Y)
-                            {
-                                if (PositionRelatif.Y < elem.PositionRelatif.Y)
-                                {
-                                    if (elem.Type == 2)
-                                    {
-                                        idSbire = elem.id;
-                                        Monstre = elem.Type == 2 ? null : elem; ;
-                                        return Collision.Monstre;
-                                    }
-                                }
-                            }
+                            idSbire = elem.id;
+                            Monstre = elem;
+                            return Collision.Monstre;
                         }
-                        idSbire = -1;
+                        break;
+                    case Direction.LEFT:
+                        PositionFutur.X -= vitesse;
+                        if (PositionFutur.X > BloqueA.X && PositionFutur.X < BloqueB.X && PositionFutur.Y + 32 > ((int)BloqueA.Y + 1) && PositionFutur.Y < BloqueB.Y)
+                        {
+                            idSbire = elem.id;
+                            Monstre = elem;
+                            return Collision.Monstre;
+                        }
+                        break;
+                    case Direction.RIGHT:
+                        PositionFutur.X += vitesse;
+                        if (PositionFutur.X + 32 > BloqueA.X && PositionFutur.X + 32 < BloqueB.X && PositionFutur.Y + 32 > ((int)BloqueA.Y + 1) && PositionFutur.Y  < BloqueB.Y)
+                        {
+                            idSbire = elem.id;
+                            Monstre = elem;
+                            return Collision.Monstre;
+                        }
                         break;
                 }
+                idSbire = -1;
             }
 
             if ((PositionRelatif.X <= 0) && (direction == Direction.LEFT))
