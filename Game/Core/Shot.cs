@@ -103,6 +103,8 @@ namespace GameTest.Core
                 {
                     PositionRelatif = PositionRelatif
                 };
+                //monBoum.PositionRelatif.X -= 50;
+                monBoum.PositionRelatif.Y -= 50;
                 if(Monstre != null)
                     Monstre.PV -= 30;
                 ListObject.MesBoum.Add(monBoum);

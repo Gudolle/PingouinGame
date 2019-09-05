@@ -178,15 +178,10 @@ namespace GameTest
 						elem.DrawName(spriteBatch, font, fontOrigin);
 				}
 			}
-            
-            foreach (Shot item in ListObject.MesTires)
-            {
-                item.DrawShoot(spriteBatch);
-            }
-            foreach (Boum item in ListObject.MesBoum)
-            {
-                item.Draw(spriteBatch);
-            }
+
+
+            ListObject.MesTires.ForEach(x => x.DrawShoot(spriteBatch));
+            ListObject.MesBoum.ForEach(x => x.Draw(spriteBatch));
 
             ListObject.player.DrawId(spriteBatch, font, fontOrigin);
             ListObject.player.drawPVplayer(spriteBatch, font, fontOrigin);

@@ -85,10 +85,7 @@ namespace GameTest
             Bloque = 3,
             Portail = 4
         }
-
-
-        
-		public void DrawAnimation(SpriteBatch spriteBatch)
+        public void DrawAnimation(SpriteBatch spriteBatch)
 		{
             Position = CalculPosition.Calcul(PositionRelatif);
             spriteBatch.Draw(Texture, Position, Source, Color.White);
